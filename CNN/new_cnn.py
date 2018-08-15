@@ -15,7 +15,7 @@ import matplotlib.pylab as plt
 from liveHistCallback import *
 
 batch_size = 20
-epochs = 25
+epochs = 1000
 
 
 in_data = np.load("indata.npy")
@@ -35,7 +35,7 @@ def cnn(img_x, img_y):
                         activation='relu'
                      # input_shape = (img_x, img_y, 1)
                      ))
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.2))
     # model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Conv2D(64, kernel_size=(2, 2), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
