@@ -53,3 +53,4 @@ class liveHist(keras.callbacks.Callback):
 
         plt.pause(.01)
         plt.draw()
+        plt.savefig("lossaccplot.png", dpi='figure')

@@ -15,7 +15,7 @@ import matplotlib.pylab as plt
 from liveHistCallback import *
 
 batch_size = 20
-epochs = 1000
+epochs = 2500
 
 
 in_data = np.load("indata.npy")
@@ -23,19 +23,20 @@ img_x, img_y = in_data[0].shape
 in_data = in_data.reshape(in_data.shape[0], img_x, img_y, 1)
 out_data = np.load("outdata.npy")
 
-seed=7
+seed=3
 np.random.seed(seed)
 x_train, x_test, y_train, y_test = train_test_split(in_data, out_data, random_state=seed)
 
 # model = unet(img_x, img_y, 1)
 def cnn(img_x, img_y):
     model = Sequential()
-    model.add(MaxPooling2D(pool_size=(4, 4)))
+    model.add(MaxPooling2D(pool_size=(3, 3)))
+    model.add(Dropout(0.1))
     model.add(Conv2D(64, kernel_size=(4, 4),
                         activation='relu'
                      # input_shape = (img_x, img_y, 1)
                      ))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.1))
     # model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Conv2D(64, kernel_size=(2, 2), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -50,8 +51,10 @@ def cnn(img_x, img_y):
     return model
 
 model = cnn(img_x, img_y)
+# sgd = keras.optimizers.SGD(momentum=0.9, decay=0.0, nesterov=False)
 model.compile(loss=keras.losses.mean_squared_error,
                 # optimizer=keras.optimizers.Adam(lr = 1e-5),
+                # optimizer=sgd,
                 optimizer=keras.optimizers.SGD(nesterov=True),
                 metrics=['mse', 'mae'])
 
@@ -68,7 +71,6 @@ model.fit(x_train, y_train,
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
-plt.savefig("lossaccplot.png", dpi='figure')
 
 model_json = model.to_json()
 with open("convnet1.json", "w") as json_file:
